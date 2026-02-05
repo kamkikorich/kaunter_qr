@@ -1,9 +1,18 @@
 // API endpoint untuk analisis sentimen menggunakan DeepSeek AI
 // Untuk Vercel Serverless Functions
 
-const DATA_API_URL = process.env.VERCEL_URL 
-  ? `https://${process.env.VERCEL_URL}/api/data`
-  : 'http://localhost:3000/api/data';
+const { google } = require('googleapis');
+
+// Load service account credentials
+const getCredentials = () => {
+  if (process.env.GOOGLE_SERVICE_ACCOUNT) {
+    return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+  }
+  return require('../perkeso-keningau-qr-fb9465d9879f.json');
+};
+
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '1Fr8IIa2fZMvu4W6G_ekVEcJxZZHWNnkT2-drp_WtJ18';
+const SHEET_NAME = process.env.SHEET_NAME || 'Sheet1';
 
 module.exports = async (req, res) => {
   // Enable CORS
@@ -31,18 +40,39 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Fetch data from Google Sheets via our data API
-    const dataResponse = await fetch(DATA_API_URL, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
+    // Fetch data directly from Google Sheets (more reliable than calling internal API)
+    console.log('[Analyze] Fetching data directly from Google Sheets...');
+    
+    const credentials = getCredentials();
+    const auth = new google.auth.GoogleAuth({
+      credentials,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
     });
 
-    if (!dataResponse.ok) {
-      throw new Error('Failed to fetch feedback data');
-    }
+    const sheets = google.sheets({ version: 'v4', auth });
+    
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${SHEET_NAME}!A:I`
+    });
 
-    const payload = await dataResponse.json();
-    const data = Array.isArray(payload) ? payload : (payload && Array.isArray(payload.data) ? payload.data : []);
+    const rows = response.data.values || [];
+    console.log('[Analyze] Raw rows from sheet:', rows.length);
+
+    // Convert to JSON (skip header row)
+    const data = rows.length > 1 ? rows.slice(1).map(row => ({
+      timestamp: row[0] || '',
+      kaunter: row[1] || '',
+      tujuan: row[2] || '',
+      skor_mesra: row[3] || 0,
+      skor_pantas: row[4] || 0,
+      skor_jelas: row[5] || 0,
+      kategori_perbaikan: row[6] || '',
+      ulasan: row[7] || '',
+      sentimen_ai: row[8] || ''
+    })) : [];
+    
+    console.log('[Analyze] Processed data count:', data.length);
 
     // Get comments from last 20 entries
     const commentsToAnalyze = data
@@ -71,7 +101,7 @@ Sila berikan:
 Jawab dalam Bahasa Melayu yang formal.`;
 
     // Call DeepSeek API
-    const deepseekResponse = await fetch("https://api.deepseek.com/v1/chat/completions", {
+    const deepseekResponse = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -107,7 +137,8 @@ Jawab dalam Bahasa Melayu yang formal.`;
     }
 
   } catch (error) {
-    console.error('Analysis Error:', error);
+    console.error('[Analyze] Full Error:', error.message);
+    console.error('[Analyze] Stack:', error.stack);
     return res.status(500).json({
       success: false,
       error: error.message,
