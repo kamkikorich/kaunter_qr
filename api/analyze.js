@@ -1,4 +1,4 @@
-// API endpoint untuk analisis sentimen menggunakan DeepSeek AI
+// API endpoint untuk analisis sentimen menggunakan Google Gemini AI
 // Untuk Vercel Serverless Functions
 
 const { google } = require('googleapis');
@@ -29,20 +29,20 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Get DeepSeek API Key from environment
-    const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
-    
-    if (!DEEPSEEK_API_KEY || DEEPSEEK_API_KEY === 'YOUR_DEEPSEEK_API_KEY_HERE') {
-      return res.status(500).json({ 
-        error: 'DeepSeek API key not configured',
+    // Get Gemini API Key from environment
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+    if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
+      return res.status(500).json({
+        error: 'Gemini API key not configured',
         demo: true,
         analysis: `CONTOH OUTPUT ANALISIS AI\n\nRumusan Eksekutif:\n1. Kemesraan staf mendapat penilaian tinggi (purata 4.6/5) - pelanggan memuji layanan mesra dan profesional\n2. Terdapat keluhan berkaitan waktu menunggu, terutamanya di kaunter 2 pada waktu puncak\n3. Kejelasan penerangan perlu dipertingkatkan untuk urusan tuntutan kompleks\n\nCadangan Tindakan:\n1. Tambah kaunter atau staf sambilan pada waktu puncak (9-11 pagi, 2-4 petang)\n2. Implementasi sistem giliran digital dengan notifikasi SMS/WhatsApp\n3. Adakan taklimat berkala untuk staf mengenai teknik komunikasi efektif`
       });
     }
 
-    // Fetch data directly from Google Sheets (more reliable than calling internal API)
+    // Fetch data directly from Google Sheets
     console.log('[Analyze] Fetching data directly from Google Sheets...');
-    
+
     const credentials = getCredentials();
     const auth = new google.auth.GoogleAuth({
       credentials,
@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
     });
 
     const sheets = google.sheets({ version: 'v4', auth });
-    
+
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: SPREADSHEET_ID,
       range: `${SHEET_NAME}!A:I`
@@ -71,7 +71,7 @@ module.exports = async (req, res) => {
       ulasan: row[7] || '',
       sentimen_ai: row[8] || ''
     })) : [];
-    
+
     console.log('[Analyze] Processed data count:', data.length);
 
     // Get comments from last 20 entries
@@ -88,7 +88,7 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Prepare prompt for DeepSeek
+    // Prepare prompt for Gemini
     const commentsText = commentsToAnalyze.map((c, i) => `${i + 1}. ${c}`).join("\n");
     const prompt = `Sebagai Pakar Kualiti Perkhidmatan, sila analisis ulasan pelanggan PERKESO Keningau berikut:
 
@@ -100,40 +100,42 @@ Sila berikan:
 
 Jawab dalam Bahasa Melayu yang formal.`;
 
-    // Call DeepSeek API
-    const deepseekResponse = await fetch("https://api.deepseek.com/chat/completions", {
+    // Call Gemini API
+    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${DEEPSEEK_API_KEY}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "deepseek-chat",
-        messages: [
-          { role: "system", content: "Anda adalah pakar kualiti perkhidmatan dengan pengalaman 20 tahun dalam analisis maklum balas pelanggan kerajaan." },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 800
+        contents: [{
+          parts: [{
+            text: prompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 800
+        }
       })
     });
 
-    if (!deepseekResponse.ok) {
-      const errorData = await deepseekResponse.json().catch(() => ({}));
-      throw new Error(errorData.error?.message || `DeepSeek API error: ${deepseekResponse.status}`);
+    if (!geminiResponse.ok) {
+      const errorData = await geminiResponse.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || `Gemini API error: ${geminiResponse.status}`);
     }
 
-    const deepseekData = await deepseekResponse.json();
+    const geminiData = await geminiResponse.json();
 
-    if (deepseekData.choices && deepseekData.choices.length > 0) {
+    if (geminiData.candidates && geminiData.candidates.length > 0 && geminiData.candidates[0].content) {
+      const analysisText = geminiData.candidates[0].content.parts[0].text;
       return res.status(200).json({
         success: true,
-        analysis: deepseekData.choices[0].message.content,
+        analysis: analysisText,
         commentCount: commentsToAnalyze.length,
-        model: deepseekData.model
+        model: 'gemini-2.0-flash'
       });
     } else {
-      throw new Error('No response from DeepSeek API');
+      throw new Error('No response from Gemini API');
     }
 
   } catch (error) {

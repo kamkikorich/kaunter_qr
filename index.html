@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ms">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,21 +9,70 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .star-rating input { display: none; }
-        .star-rating label { cursor: pointer; color: #cbd5e1; font-size: 1.5rem; transition: color 0.2s; }
-        .star-rating input:checked ~ label, .star-rating label:hover, .star-rating label:hover ~ label { color: #fbbf24; }
-        .hidden-section { display: none !important; }
-        .fade-in { animation: fadeIn 0.5s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .pulse-ring { animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            cursor: pointer;
+            color: #cbd5e1;
+            font-size: 1.5rem;
+            transition: color 0.2s;
+        }
+
+        .star-rating input:checked~label,
+        .star-rating label:hover,
+        .star-rating label:hover~label {
+            color: #fbbf24;
+        }
+
+        .hidden-section {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
         @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            }
+
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+            }
+
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+            }
         }
     </style>
 </head>
+
 <body class="bg-slate-50 text-slate-800">
 
     <!-- Navbar -->
@@ -35,7 +85,8 @@
                     <p class="text-xs text-blue-200">Sistem Penilaian Pelanggan 1Serve</p>
                 </div>
             </div>
-            <button onclick="toggleAdmin()" class="text-xs bg-blue-800 hover:bg-blue-700 px-3 py-1 rounded transition">Admin</button>
+            <button onclick="toggleAdmin()"
+                class="text-xs bg-blue-800 hover:bg-blue-700 px-3 py-1 rounded transition">Admin</button>
         </div>
     </nav>
 
@@ -43,33 +94,44 @@
     <div class="container mx-auto p-4 max-w-lg mb-20">
 
         <!-- SUCCESS MESSAGE (Regular Feedback) -->
-        <div id="success-screen" class="hidden-section flex flex-col items-center justify-center text-center space-y-6 py-10 fade-in">
-            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-4xl mb-2 shadow-sm">&#10003;</div>
+        <div id="success-screen"
+            class="hidden-section flex flex-col items-center justify-center text-center space-y-6 py-10 fade-in">
+            <div
+                class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-4xl mb-2 shadow-sm">
+                &#10003;</div>
             <h2 class="text-2xl font-bold text-slate-800">Terima Kasih!</h2>
             <p class="text-slate-600">Maklum balas anda telah direkodkan. Kami menghargai masa anda.</p>
-            <button onclick="location.reload()" class="mt-8 bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-blue-700 transition w-full">Kembali</button>
+            <button onclick="location.reload()"
+                class="mt-8 bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-blue-700 transition w-full">Kembali</button>
         </div>
 
         <!-- SUCCESS MESSAGE (Penghargaan) -->
-        <div id="penghargaan-success" class="hidden-section flex flex-col items-center justify-center text-center space-y-6 py-10 fade-in">
-            <div class="w-20 h-20 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full flex items-center justify-center text-4xl mb-2 shadow-sm">🏆</div>
+        <div id="penghargaan-success"
+            class="hidden-section flex flex-col items-center justify-center text-center space-y-6 py-10 fade-in">
+            <div
+                class="w-20 h-20 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full flex items-center justify-center text-4xl mb-2 shadow-sm">
+                🏆</div>
             <h2 class="text-2xl font-bold text-orange-900">Penghargaan Diterima!</h2>
-            <p class="text-slate-600">Terima kasih atas pengiktirafan anda. Penghargaan ini akan disampaikan kepada staf berkenaan.</p>
+            <p class="text-slate-600">Terima kasih atas pengiktirafan anda. Penghargaan ini akan disampaikan kepada staf
+                berkenaan.</p>
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-sm">
                 <p class="text-sm text-orange-800">
                     <strong>Nama:</strong> <span id="penghargaan-nama-display">-</span><br>
                     <strong>Kaunter:</strong> <span id="penghargaan-kaunter-display">-</span>
                 </p>
             </div>
-            <button onclick="location.reload()" class="mt-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:from-yellow-600 hover:to-orange-600 transition w-full">Kembali ke Utama</button>
+            <button onclick="location.reload()"
+                class="mt-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:from-yellow-600 hover:to-orange-600 transition w-full">Kembali
+                ke Utama</button>
         </div>
 
         <!-- PENGHARGAAN FORM (Hidden by default) -->
         <div id="penghargaan-form" class="hidden-section fade-in">
-            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl shadow-sm border-2 border-yellow-300 p-6 mb-6 relative overflow-hidden">
+            <div
+                class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl shadow-sm border-2 border-yellow-300 p-6 mb-6 relative overflow-hidden">
                 <!-- Decorative background -->
                 <div class="absolute top-0 right-0 w-32 h-32 bg-yellow-200 rounded-full -mr-16 -mt-16 opacity-50"></div>
-                
+
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="text-3xl">🏆</span>
@@ -84,17 +146,19 @@
                             <label class="block text-sm font-semibold text-slate-700 mb-2">
                                 Nama Pegawai <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" name="nama_pegawai" required 
+                            <input type="text" name="nama_pegawai" required
                                 placeholder="Contoh: Encik Ahmad bin Abdullah"
                                 class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-yellow-500 outline-none">
-                            <p class="text-xs text-slate-500 mt-1">Sila nyatakan nama penuh atau nama staf yang melayani anda</p>
+                            <p class="text-xs text-slate-500 mt-1">Sila nyatakan nama penuh atau nama staf yang melayani
+                                anda</p>
                         </div>
 
                         <div class="bg-white rounded-lg p-4 border border-yellow-200">
                             <label class="block text-sm font-semibold text-slate-700 mb-2">
                                 Kaunter <span class="text-red-500">*</span>
                             </label>
-                            <select name="kaunter_penghargaan" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-yellow-500 outline-none">
+                            <select name="kaunter_penghargaan" required
+                                class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-yellow-500 outline-none">
                                 <option value="" disabled selected>Pilih Kaunter...</option>
                                 <option value="Kaunter 1">Kaunter 1</option>
                                 <option value="Kaunter 2">Kaunter 2</option>
@@ -105,22 +169,25 @@
                             <label class="block text-sm font-semibold text-slate-700 mb-2">
                                 Ucapan Penghargaan (Pilihan)
                             </label>
-                            <textarea name="ucapan_penghargaan" rows="3" 
-                                placeholder="Terima kasih atas..."
+                            <textarea name="ucapan_penghargaan" rows="3" placeholder="Terima kasih atas..."
                                 class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-yellow-500 outline-none resize-none"></textarea>
                         </div>
 
                         <div class="flex gap-3 pt-2">
-                            <button type="button" onclick="togglePenghargaan()" 
+                            <button type="button" onclick="togglePenghargaan()"
                                 class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 rounded-lg transition">
                                 Kembali
                             </button>
-                            <button type="submit" id="penghargaanBtn" 
+                            <button type="submit" id="penghargaanBtn"
                                 class="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-3 rounded-lg shadow-lg transform transition active:scale-95 flex justify-center items-center">
                                 <span id="penghargaanBtnText">Hantar Penghargaan</span>
-                                <svg id="penghargaanBtnLoader" class="animate-spin ml-2 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                <svg id="penghargaanBtnLoader" class="animate-spin ml-2 h-5 w-5 text-white hidden"
+                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
                                 </svg>
                             </button>
                         </div>
@@ -138,16 +205,20 @@
                     <!-- Dropdowns -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Kaunter</label>
-                            <select name="kaunter" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <label
+                                class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Kaunter</label>
+                            <select name="kaunter" required
+                                class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                                 <option value="" disabled selected>Pilih...</option>
                                 <option value="Kaunter 1">Kaunter 1</option>
                                 <option value="Kaunter 2">Kaunter 2</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Urusan</label>
-                            <select name="tujuan" required class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <label
+                                class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Urusan</label>
+                            <select name="tujuan" required
+                                class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                                 <option value="" disabled selected>Pilih...</option>
                                 <option value="Tuntutan Faedah">Tuntutan Faedah</option>
                                 <option value="Caruman">Caruman</option>
@@ -162,39 +233,58 @@
                     <div class="space-y-4 pt-2">
                         <!-- Kemesraan -->
                         <div class="bg-blue-50 rounded-lg p-4">
-                            <label class="block text-sm font-semibold text-blue-900 mb-2">Kemesraan Staf <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-semibold text-blue-900 mb-2">Kemesraan Staf <span
+                                    class="text-red-500">*</span></label>
                             <div class="star-rating flex flex-row-reverse justify-center gap-1">
-                                <input type="radio" name="skor_mesra" id="mesra5" value="5" required><label for="mesra5">&#9733;</label>
-                                <input type="radio" name="skor_mesra" id="mesra4" value="4"><label for="mesra4">&#9733;</label>
-                                <input type="radio" name="skor_mesra" id="mesra3" value="3"><label for="mesra3">&#9733;</label>
-                                <input type="radio" name="skor_mesra" id="mesra2" value="2"><label for="mesra2">&#9733;</label>
-                                <input type="radio" name="skor_mesra" id="mesra1" value="1"><label for="mesra1">&#9733;</label>
+                                <input type="radio" name="skor_mesra" id="mesra5" value="5" required><label
+                                    for="mesra5">&#9733;</label>
+                                <input type="radio" name="skor_mesra" id="mesra4" value="4"><label
+                                    for="mesra4">&#9733;</label>
+                                <input type="radio" name="skor_mesra" id="mesra3" value="3"><label
+                                    for="mesra3">&#9733;</label>
+                                <input type="radio" name="skor_mesra" id="mesra2" value="2"><label
+                                    for="mesra2">&#9733;</label>
+                                <input type="radio" name="skor_mesra" id="mesra1" value="1"><label
+                                    for="mesra1">&#9733;</label>
                             </div>
-                            <p class="text-center text-xs text-slate-500 mt-1">1 = Sangat Tidak Puas, 5 = Sangat Puas</p>
+                            <p class="text-center text-xs text-slate-500 mt-1">1 = Sangat Tidak Puas, 5 = Sangat Puas
+                            </p>
                         </div>
 
                         <!-- Kepantasan -->
                         <div class="bg-blue-50 rounded-lg p-4">
-                            <label class="block text-sm font-semibold text-blue-900 mb-2">Kepantasan Urusan <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-semibold text-blue-900 mb-2">Kepantasan Urusan <span
+                                    class="text-red-500">*</span></label>
                             <div class="star-rating flex flex-row-reverse justify-center gap-1">
-                                <input type="radio" name="skor_pantas" id="pantas5" value="5" required><label for="pantas5">&#9733;</label>
-                                <input type="radio" name="skor_pantas" id="pantas4" value="4"><label for="pantas4">&#9733;</label>
-                                <input type="radio" name="skor_pantas" id="pantas3" value="3"><label for="pantas3">&#9733;</label>
-                                <input type="radio" name="skor_pantas" id="pantas2" value="2"><label for="pantas2">&#9733;</label>
-                                <input type="radio" name="skor_pantas" id="pantas1" value="1"><label for="pantas1">&#9733;</label>
+                                <input type="radio" name="skor_pantas" id="pantas5" value="5" required><label
+                                    for="pantas5">&#9733;</label>
+                                <input type="radio" name="skor_pantas" id="pantas4" value="4"><label
+                                    for="pantas4">&#9733;</label>
+                                <input type="radio" name="skor_pantas" id="pantas3" value="3"><label
+                                    for="pantas3">&#9733;</label>
+                                <input type="radio" name="skor_pantas" id="pantas2" value="2"><label
+                                    for="pantas2">&#9733;</label>
+                                <input type="radio" name="skor_pantas" id="pantas1" value="1"><label
+                                    for="pantas1">&#9733;</label>
                             </div>
                             <p class="text-center text-xs text-slate-500 mt-1">1 = Sangat Lambat, 5 = Sangat Pantas</p>
                         </div>
 
                         <!-- Kejelasan -->
                         <div class="bg-blue-50 rounded-lg p-4">
-                            <label class="block text-sm font-semibold text-blue-900 mb-2">Kejelasan Penerangan <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-semibold text-blue-900 mb-2">Kejelasan Penerangan <span
+                                    class="text-red-500">*</span></label>
                             <div class="star-rating flex flex-row-reverse justify-center gap-1">
-                                <input type="radio" name="skor_jelas" id="jelas5" value="5" required><label for="jelas5">&#9733;</label>
-                                <input type="radio" name="skor_jelas" id="jelas4" value="4"><label for="jelas4">&#9733;</label>
-                                <input type="radio" name="skor_jelas" id="jelas3" value="3"><label for="jelas3">&#9733;</label>
-                                <input type="radio" name="skor_jelas" id="jelas2" value="2"><label for="jelas2">&#9733;</label>
-                                <input type="radio" name="skor_jelas" id="jelas1" value="1"><label for="jelas1">&#9733;</label>
+                                <input type="radio" name="skor_jelas" id="jelas5" value="5" required><label
+                                    for="jelas5">&#9733;</label>
+                                <input type="radio" name="skor_jelas" id="jelas4" value="4"><label
+                                    for="jelas4">&#9733;</label>
+                                <input type="radio" name="skor_jelas" id="jelas3" value="3"><label
+                                    for="jelas3">&#9733;</label>
+                                <input type="radio" name="skor_jelas" id="jelas2" value="2"><label
+                                    for="jelas2">&#9733;</label>
+                                <input type="radio" name="skor_jelas" id="jelas1" value="1"><label
+                                    for="jelas1">&#9733;</label>
                             </div>
                             <p class="text-center text-xs text-slate-500 mt-1">1 = Sangat Keliru, 5 = Sangat Jelas</p>
                         </div>
@@ -202,22 +292,31 @@
 
                     <!-- Improvements -->
                     <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-3">Cadangan Perbaikan (Pilihan berbilang)</label>
+                        <label class="block text-sm font-semibold text-slate-700 mb-3">Cadangan Perbaikan (Pilihan
+                            berbilang)</label>
                         <div class="grid grid-cols-2 gap-3">
-                            <label class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200 cursor-pointer hover:border-blue-400 transition">
-                                <input type="checkbox" name="kategori_perbaikan" value="Waktu Menunggu" class="rounded text-blue-600 focus:ring-blue-500">
+                            <label
+                                class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200 cursor-pointer hover:border-blue-400 transition">
+                                <input type="checkbox" name="kategori_perbaikan" value="Waktu Menunggu"
+                                    class="rounded text-blue-600 focus:ring-blue-500">
                                 <span class="text-sm text-slate-600">Waktu Menunggu</span>
                             </label>
-                            <label class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200 cursor-pointer hover:border-blue-400 transition">
-                                <input type="checkbox" name="kategori_perbaikan" value="Fasiliti" class="rounded text-blue-600 focus:ring-blue-500">
+                            <label
+                                class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200 cursor-pointer hover:border-blue-400 transition">
+                                <input type="checkbox" name="kategori_perbaikan" value="Fasiliti"
+                                    class="rounded text-blue-600 focus:ring-blue-500">
                                 <span class="text-sm text-slate-600">Fasiliti</span>
                             </label>
-                            <label class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200 cursor-pointer hover:border-blue-400 transition">
-                                <input type="checkbox" name="kategori_perbaikan" value="Sikap Staf" class="rounded text-blue-600 focus:ring-blue-500">
+                            <label
+                                class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200 cursor-pointer hover:border-blue-400 transition">
+                                <input type="checkbox" name="kategori_perbaikan" value="Sikap Staf"
+                                    class="rounded text-blue-600 focus:ring-blue-500">
                                 <span class="text-sm text-slate-600">Sikap Staf</span>
                             </label>
-                            <label class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200 cursor-pointer hover:border-blue-400 transition">
-                                <input type="checkbox" name="kategori_perbaikan" value="Sistem Giliran" class="rounded text-blue-600 focus:ring-blue-500">
+                            <label
+                                class="flex items-center space-x-2 bg-slate-50 p-3 rounded-lg border border-slate-200 cursor-pointer hover:border-blue-400 transition">
+                                <input type="checkbox" name="kategori_perbaikan" value="Sistem Giliran"
+                                    class="rounded text-blue-600 focus:ring-blue-500">
                                 <span class="text-sm text-slate-600">Sistem Giliran</span>
                             </label>
                         </div>
@@ -226,11 +325,12 @@
                     <!-- Comment -->
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Ulasan / Komen</label>
-                        <textarea name="ulasan" rows="3" placeholder="Sila kongsikan maklum balas atau cadangan anda..." class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                        <textarea name="ulasan" rows="3" placeholder="Sila kongsikan maklum balas atau cadangan anda..."
+                            class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
                     </div>
 
                     <!-- Penghargaan Button -->
-                    <button type="button" onclick="togglePenghargaan()" 
+                    <button type="button" onclick="togglePenghargaan()"
                         class="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-3 rounded-xl shadow-lg transform hover:scale-[1.02] transition flex items-center justify-center gap-2 mb-4"
                         title="Berikan Penghargaan kepada Staf">
                         <span class="text-xl">⭐</span>
@@ -238,11 +338,16 @@
                     </button>
 
                     <!-- Submit Button -->
-                    <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex justify-center items-center">
+                    <button type="submit" id="submitBtn"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex justify-center items-center">
                         <span id="btnText">Hantar Penilaian</span>
-                        <svg id="btnLoader" class="animate-spin ml-2 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg id="btnLoader" class="animate-spin ml-2 h-5 w-5 text-white hidden"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
                         </svg>
                     </button>
                     <div class="mt-6 pt-4 border-t border-slate-200">
@@ -251,7 +356,8 @@
                             Tingkat 1 & 2, Lot 22, Blok B, ADIKA Commercial Complex,<br>
                             Peti Surat 704, 89008 Keningau
                         </p>
-                        <p class="text-center text-xs text-slate-400 mt-2">Hak Cipta Terpelihara &copy; 2024 PERKESO Keningau</p>
+                        <p class="text-center text-xs text-slate-400 mt-2">Hak Cipta Terpelihara &copy; 2024 PERKESO
+                            Keningau</p>
                     </div>
                 </form>
             </div>
@@ -262,13 +368,20 @@
             <!-- Login Overlay -->
             <div id="admin-login" class="bg-white rounded-xl shadow-md p-6 border border-slate-200 mb-6">
                 <div class="text-center mb-6">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl mx-auto mb-3">&#128274;</div>
+                    <div
+                        class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl mx-auto mb-3">
+                        &#128274;</div>
                     <h3 class="text-lg font-bold text-slate-800">Akses Admin</h3>
                     <p class="text-sm text-slate-500">Sila masukkan kata laluan untuk mengakses dashboard</p>
                 </div>
-                <input type="password" id="adminPass" placeholder="Kata Laluan" class="w-full border border-slate-300 rounded-lg p-3 mb-3 focus:ring-2 focus:ring-blue-500 outline-none" onkeypress="if(event.key==='Enter')checkAdmin()">
-                <button onclick="checkAdmin()" class="w-full bg-blue-600 text-white rounded-lg p-3 text-sm font-bold hover:bg-blue-700 transition">Log Masuk</button>
-                <button onclick="toggleAdmin()" class="w-full mt-2 text-slate-500 text-sm hover:text-slate-700">Kembali ke Borang</button>
+                <input type="password" id="adminPass" placeholder="Kata Laluan"
+                    class="w-full border border-slate-300 rounded-lg p-3 mb-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                    onkeypress="if(event.key==='Enter')checkAdmin()">
+                <button onclick="checkAdmin()"
+                    class="w-full bg-blue-600 text-white rounded-lg p-3 text-sm font-bold hover:bg-blue-700 transition">Log
+                    Masuk</button>
+                <button onclick="toggleAdmin()" class="w-full mt-2 text-slate-500 text-sm hover:text-slate-700">Kembali
+                    ke Borang</button>
             </div>
 
             <!-- Dashboard Content -->
@@ -276,8 +389,11 @@
                 <div class="flex justify-between items-center mb-2">
                     <h2 class="text-xl font-bold text-slate-800">Dashboard Prestasi</h2>
                     <div class="flex gap-2">
-                        <button onclick="loadDashboardData()" class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition">Refresh Data</button>
-                        <button onclick="logoutAdmin()" class="text-sm text-red-500 hover:text-red-700">Log Keluar</button>
+                        <button onclick="loadDashboardData()"
+                            class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition">Refresh
+                            Data</button>
+                        <button onclick="logoutAdmin()" class="text-sm text-red-500 hover:text-red-700">Log
+                            Keluar</button>
                     </div>
                 </div>
 
@@ -313,7 +429,8 @@
                     <h3 class="font-bold text-orange-900 mb-3 flex items-center gap-2">
                         <span>🏆</span>
                         <span>Penghargaan Staf</span>
-                        <span class="bg-orange-500 text-white px-2 py-0.5 rounded text-xs" id="penghargaan-count">0</span>
+                        <span class="bg-orange-500 text-white px-2 py-0.5 rounded text-xs"
+                            id="penghargaan-count">0</span>
                     </h3>
                     <div id="penghargaan-list" class="space-y-2 max-h-48 overflow-y-auto">
                         <p class="text-sm text-orange-700 text-center py-2">Tiada penghargaan direkodkan</p>
@@ -321,26 +438,34 @@
                 </div>
 
                 <!-- AI Insight Card -->
-                <div class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
+                <div
+                    class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10"></div>
                     <div class="flex justify-between items-start z-10 relative">
                         <div>
                             <h3 class="font-bold text-lg flex items-center gap-2">
-                                <span>DeepSeek AI Analysis</span>
+                                <span>Gemini AI Analysis</span>
                                 <span class="bg-green-400/30 px-2 py-0.5 rounded text-xs">AI</span>
                             </h3>
                             <p class="text-indigo-200 text-xs mb-4">Analisis sentimen dari ulasan pelanggan</p>
                         </div>
                     </div>
 
-                    <div id="ai-result" class="bg-white/10 backdrop-blur rounded-lg p-4 text-sm leading-relaxed mb-4 min-h-[120px] whitespace-pre-line">
-                        Klik butang di bawah untuk menjana analisis sentimen dari 10-20 ulasan terkini menggunakan DeepSeek AI.
+                    <div id="ai-result"
+                        class="bg-white/10 backdrop-blur rounded-lg p-4 text-sm leading-relaxed mb-4 min-h-[120px] whitespace-pre-line">
+                        Klik butang di bawah untuk menjana analisis sentimen dari 10-20 ulasan terkini menggunakan
+                        Gemini AI.
                     </div>
 
-                    <button onclick="runDeepSeekAnalysis()" id="aiBtn" class="w-full bg-white text-indigo-700 font-bold py-3 rounded-lg hover:bg-indigo-50 transition flex justify-center items-center gap-2">
-                        <svg id="aiSpinner" class="animate-spin h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <button onclick="runGeminiAnalysis()" id="aiBtn"
+                        class="w-full bg-white text-indigo-700 font-bold py-3 rounded-lg hover:bg-indigo-50 transition flex justify-center items-center gap-2">
+                        <svg id="aiSpinner" class="animate-spin h-5 w-5 hidden" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
                         </svg>
                         <span id="aiBtnText">Jana Analisis Sentimen</span>
                     </button>
@@ -366,25 +491,29 @@
                         <span class="text-2xl">📱</span>
                         <span>Jana QR Code</span>
                     </h3>
-                    <p class="text-sm text-slate-600 mb-4">Cetak QR code ini untuk diletakkan di kaunter. Pelanggan boleh imbas untuk memberi maklum balas.</p>
-                    
+                    <p class="text-sm text-slate-600 mb-4">Cetak QR code ini untuk diletakkan di kaunter. Pelanggan
+                        boleh imbas untuk memberi maklum balas.</p>
+
                     <div class="flex flex-col items-center gap-4">
                         <div id="qrcode" class="bg-white p-4 rounded-lg border-2 border-slate-200"></div>
-                        
+
                         <div class="flex gap-2 w-full">
-                            <input type="text" id="qrUrl" placeholder="URL untuk QR code..." 
+                            <input type="text" id="qrUrl" placeholder="URL untuk QR code..."
                                 class="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
                                 value="">
-                            <button onclick="generateQR()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+                            <button onclick="generateQR()"
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
                                 Jana
                             </button>
                         </div>
-                        
+
                         <div class="flex gap-2 w-full">
-                            <button onclick="printQR()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition">
+                            <button onclick="printQR()"
+                                class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-700 transition">
                                 🖨️ Cetak QR Code
                             </button>
-                            <button onclick="downloadQR()" class="flex-1 bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-700 transition">
+                            <button onclick="downloadQR()"
+                                class="flex-1 bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-slate-700 transition">
                                 💾 Muat Turun
                             </button>
                         </div>
@@ -395,7 +524,8 @@
                 <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
                     <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
                         <span>Maklum Balas Terkini</span>
-                        <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs" id="feedback-count">0 entries</span>
+                        <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs" id="feedback-count">0
+                            entries</span>
                     </h3>
                     <div id="feedback-table-container" class="overflow-x-auto">
                         <p class="text-center text-slate-500 py-4">Memuat data...</p>
@@ -418,12 +548,12 @@
         const DATA_API_URL = `${API_BASE_URL}/data`;
         const ANALYZE_API_URL = `${API_BASE_URL}/analyze`;
         let ADMIN_PASSWORD = "admin123"; // Default password, will be overwritten by env
-        
+
         // Fetch admin password from server
         fetch('/api/config')
             .then(res => res.json())
             .then(data => { if (data.adminPassword) ADMIN_PASSWORD = data.adminPassword; })
-            .catch(() => {});
+            .catch(() => { });
 
         // ==================== STATE ====================
         let dashboardData = [];
@@ -450,7 +580,7 @@
             window.scrollTo(0, 0);
         }
 
-        document.getElementById('penghargaanForm').addEventListener('submit', async function(e) {
+        document.getElementById('penghargaanForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const btn = document.getElementById('penghargaanBtn');
@@ -497,7 +627,7 @@
                 // Show success with details
                 document.getElementById('penghargaan-nama-display').innerText = namaPegawai;
                 document.getElementById('penghargaan-kaunter-display').innerText = kaunter;
-                
+
                 document.getElementById('penghargaan-form').classList.add('hidden-section');
                 document.getElementById('penghargaan-success').classList.remove('hidden-section');
                 window.scrollTo(0, 0);
@@ -512,7 +642,7 @@
         });
 
         // ==================== CUSTOMER FORM LOGIC ====================
-        document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+        document.getElementById('feedbackForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const btn = document.getElementById('submitBtn');
@@ -566,7 +696,7 @@
                     try {
                         const payload = await response.json();
                         if (payload && payload.error) errorMessage = payload.error;
-                    } catch (_) {}
+                    } catch (_) { }
                     throw new Error(errorMessage);
                 }
 
@@ -669,10 +799,10 @@
             }
 
             // Separate penghargaan from regular feedback
-            const penghargaanData = data.filter(row => 
+            const penghargaanData = data.filter(row =>
                 row.ulasan && row.ulasan.toUpperCase().startsWith('PENGHARGAAN')
             );
-            const regularData = data.filter(row => 
+            const regularData = data.filter(row =>
                 !row.ulasan || !row.ulasan.toUpperCase().startsWith('PENGHARGAAN')
             );
 
@@ -704,7 +834,7 @@
 
         function renderPenghargaanList(penghargaanData) {
             const container = document.getElementById('penghargaan-list');
-            
+
             if (!penghargaanData || penghargaanData.length === 0) {
                 container.innerHTML = '<p class="text-sm text-orange-700 text-center py-2">Tiada penghargaan direkodkan</p>';
                 return;
@@ -750,7 +880,7 @@
             }
 
             // Filter out penghargaan entries
-            const regularData = data.filter(row => 
+            const regularData = data.filter(row =>
                 !row.ulasan || !row.ulasan.toUpperCase().startsWith('PENGHARGAAN')
             );
 
@@ -809,8 +939,8 @@
             container.innerHTML = '<div class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-2 rounded mb-2 text-xs">Mod Demo: Sambungkan Google Sheets untuk melihat data sebenar</div>' + container.innerHTML;
         }
 
-        // ==================== DEEPSEEK AI INTEGRATION ====================
-        async function runDeepSeekAnalysis() {
+        // ==================== GEMINI AI INTEGRATION ====================
+        async function runGeminiAnalysis() {
             const aiBtn = document.getElementById('aiBtn');
             const aiBtnText = document.getElementById('aiBtnText');
             const aiSpinner = document.getElementById('aiSpinner');
@@ -820,7 +950,7 @@
             aiBtn.disabled = true;
             aiBtnText.innerText = "Sedang menganalisis...";
             aiSpinner.classList.remove('hidden');
-            aiResult.innerText = "Menghubungi server untuk analisis AI...";
+            aiResult.innerText = "Menghubungi Gemini AI untuk analisis...";
 
             try {
                 const response = await fetch(ANALYZE_API_URL, {
@@ -839,7 +969,7 @@
                     }
                 } else if (data.demo) {
                     // Demo mode - API key not configured
-                    aiResult.innerText = data.analysis || "API key tidak dikonfigurasi. Sila tambah DEEPSEEK_API_KEY dalam environment variable Vercel.";
+                    aiResult.innerText = data.analysis || "API key tidak dikonfigurasi. Sila tambah GEMINI_API_KEY dalam environment variable Vercel.";
                 } else {
                     aiResult.innerText = `Ralat: ${data.error || 'Unknown error'}`;
                 }
@@ -860,8 +990,8 @@
         function initQRCode() {
             const urlInput = document.getElementById('qrUrl');
             // Auto-detect current URL
-            const currentUrl = window.location.origin.includes('localhost') 
-                ? window.location.origin 
+            const currentUrl = window.location.origin.includes('localhost')
+                ? window.location.origin
                 : window.location.origin;
             urlInput.value = currentUrl;
             generateQR();
@@ -870,10 +1000,10 @@
         function generateQR() {
             const url = document.getElementById('qrUrl').value || window.location.origin;
             const qrContainer = document.getElementById('qrcode');
-            
+
             // Clear previous QR code
             qrContainer.innerHTML = '';
-            
+
             // Generate new QR code
             qrCodeInstance = new QRCode(qrContainer, {
                 text: url,
@@ -889,7 +1019,7 @@
             const qrContainer = document.getElementById('qrcode');
             const img = qrContainer.querySelector('img');
             const logoSrc = 'perkeso-logo.jpg';
-            
+
             if (!img) {
                 alert('Sila jana QR code terlebih dahulu');
                 return;
@@ -1010,7 +1140,7 @@
         function downloadQR() {
             const qrContainer = document.getElementById('qrcode');
             const img = qrContainer.querySelector('img');
-            
+
             if (!img) {
                 alert('Sila jana QR code terlebih dahulu');
                 return;
@@ -1037,7 +1167,7 @@
                     initQRCode();
                 }
             });
-            
+
             observer.observe(document.getElementById('dashboard-content'), {
                 attributes: true,
                 attributeFilter: ['class']
@@ -1045,4 +1175,5 @@
         });
     </script>
 </body>
+
 </html>
