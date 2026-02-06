@@ -802,14 +802,11 @@
             const penghargaanData = data.filter(row =>
                 row.ulasan && row.ulasan.toUpperCase().startsWith('PENGHARGAAN')
             );
-            const regularData = data.filter(row =>
-                !row.ulasan || !row.ulasan.toUpperCase().startsWith('PENGHARGAAN')
-            );
 
-            const total = regularData.length;
+            const total = data.length;
             let sumMesra = 0, sumPantas = 0, sumJelas = 0;
 
-            regularData.forEach(row => {
+            data.forEach(row => {
                 sumMesra += parseFloat(row.skor_mesra) || 0;
                 sumPantas += parseFloat(row.skor_pantas) || 0;
                 sumJelas += parseFloat(row.skor_jelas) || 0;
