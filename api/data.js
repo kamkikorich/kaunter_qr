@@ -54,9 +54,14 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Convert to JSON (skip header row)
-    const headers = rows[0];
-    const data = rows.slice(1).map(row => {
+    // Convert to JSON (skip header row only if it exists)
+    const headerRow = rows[0] || [];
+    const hasHeader = headerRow.some(cell =>
+      typeof cell === 'string' && /timestamp|tarikh|kaunter|tujuan|skor|kategori|ulasan|sentimen/i.test(cell)
+    );
+    const dataRows = hasHeader ? rows.slice(1) : rows;
+
+    const data = dataRows.map(row => {
       return {
         timestamp: formatDate(row[0]),
         kaunter: row[1] || '',
