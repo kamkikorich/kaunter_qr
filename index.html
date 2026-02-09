@@ -114,11 +114,15 @@
             <h2 class="text-2xl font-bold text-orange-900">Penghargaan Diterima!</h2>
             <p class="text-slate-600">Terima kasih atas pengiktirafan anda. Penghargaan ini akan disampaikan kepada staf
                 berkenaan.</p>
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-sm">
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-sm text-left space-y-2">
                 <p class="text-sm text-orange-800">
                     <strong>Nama:</strong> <span id="penghargaan-nama-display">-</span><br>
                     <strong>Kaunter:</strong> <span id="penghargaan-kaunter-display">-</span>
                 </p>
+                <p class="text-sm text-slate-700 pt-2 border-t border-yellow-200">
+                    <strong>No. Rujukan:</strong> <span id="penghargaan-rujukan-display" class="font-mono">-</span>
+                </p>
+                <p class="text-xs text-slate-500">Simpan no. rujukan untuk semakan. Rekod disimpan dengan tarikh/masa.</p>
             </div>
             <button onclick="location.reload()"
                 class="mt-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:from-yellow-600 hover:to-orange-600 transition w-full">Kembali
@@ -138,9 +142,15 @@
                         <div>
                             <h2 class="text-xl font-bold text-orange-900">Penghargaan Staf</h2>
                             <p class="text-sm text-orange-700">Berikan penghargaan kepada staf yang cemerlang</p>
+                            <p class="text-xs text-slate-600 mt-1 bg-white/60 rounded px-2 py-1 border border-yellow-200">
+                                <strong>Ketelusan:</strong> Setiap penghargaan direkodkan dengan tarikh dan masa. Rekod boleh disemak oleh pengurusan. Satu penghargaan dibenarkan per peranti per hari.
+                            </p>
                         </div>
                     </div>
 
+                    <div id="penghargaan-limit-msg" class="hidden mb-4 p-3 bg-amber-100 border border-amber-300 rounded-lg text-sm text-amber-800">
+                        Anda telah menghantar penghargaan hari ini. Satu penghargaan dibenarkan per peranti per hari untuk memastikan ketelusan.
+                    </div>
                     <form id="penghargaanForm" class="space-y-4">
                         <div class="bg-white rounded-lg p-4 border border-yellow-200">
                             <label class="block text-sm font-semibold text-slate-700 mb-2">
@@ -171,6 +181,30 @@
                             </label>
                             <textarea name="ucapan_penghargaan" rows="3" placeholder="Terima kasih atas..."
                                 class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm focus:ring-2 focus:ring-yellow-500 outline-none resize-none"></textarea>
+                        </div>
+
+                        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="bg-slate-50 border-b border-slate-200 px-4 py-3">
+                                <h3 class="text-sm font-semibold text-slate-800">Bukti pemberi (untuk semakan)</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Sila isi nama atau 4 digit terakhir no. telefon. Salah satu wajib; maklumat untuk semakan dalaman sahaja.</p>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="nama_pemberi" class="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-1.5">Nama pemberi</label>
+                                        <input type="text" name="nama_pemberi" id="nama_pemberi"
+                                            placeholder="Contoh: Siti"
+                                            class="w-full bg-white border border-slate-200 rounded-md px-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-blue-600 focus:border-blue-500 outline-none transition">
+                                    </div>
+                                    <div>
+                                        <label for="telefon_4digit" class="block text-xs font-medium text-slate-600 uppercase tracking-wide mb-1.5">No. telefon (4 digit terakhir)</label>
+                                        <input type="text" name="telefon_4digit" id="telefon_4digit" maxlength="4" pattern="[0-9]{4}" inputmode="numeric"
+                                            placeholder="Contoh: 5678"
+                                            class="w-full bg-white border border-slate-200 rounded-md px-3 py-2.5 text-sm text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-blue-600 focus:border-blue-500 outline-none transition">
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-500 mt-3">Wajib isi salah satu untuk ketelusan.</p>
+                            </div>
                         </div>
 
                         <div class="flex gap-3 pt-2">
@@ -432,6 +466,7 @@
                         <span class="bg-orange-500 text-white px-2 py-0.5 rounded text-xs"
                             id="penghargaan-count">0</span>
                     </h3>
+                    <p class="text-xs text-slate-600 mb-2">Rekod disimpan dengan tarikh/masa untuk ketelusan dan semakan.</p>
                     <div id="penghargaan-list" class="space-y-2 max-h-48 overflow-y-auto">
                         <p class="text-sm text-orange-700 text-center py-2">Tiada penghargaan direkodkan</p>
                     </div>
@@ -562,20 +597,43 @@
         // ==================== PENGHARGAAN FORM LOGIC ====================
         let isPenghargaanMode = false;
 
+        function getTodayKey() {
+            const d = new Date();
+            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        function hasSubmittedPenghargaanToday() {
+            try {
+                const saved = localStorage.getItem('penghargaan_last_date');
+                return saved === getTodayKey();
+            } catch (e) { return false; }
+        }
+
         function togglePenghargaan() {
             const penghargaanForm = document.getElementById('penghargaan-form');
             const customerForm = document.getElementById('customer-form');
+            const limitMsg = document.getElementById('penghargaan-limit-msg');
+            const penghargaanBtn = document.getElementById('penghargaanBtn');
+            const formEl = document.getElementById('penghargaanForm');
 
             if (isPenghargaanMode) {
-                // Back to customer form
                 penghargaanForm.classList.add('hidden-section');
                 customerForm.classList.remove('hidden-section');
                 isPenghargaanMode = false;
             } else {
-                // Show penghargaan form
                 customerForm.classList.add('hidden-section');
                 penghargaanForm.classList.remove('hidden-section');
                 isPenghargaanMode = true;
+                // Ketelusan: had satu penghargaan per peranti per hari
+                if (hasSubmittedPenghargaanToday()) {
+                    limitMsg.classList.remove('hidden');
+                    penghargaanBtn.disabled = true;
+                    formEl.querySelectorAll('input, select, textarea').forEach(el => { el.disabled = true; });
+                } else {
+                    limitMsg.classList.add('hidden');
+                    penghargaanBtn.disabled = false;
+                    formEl.querySelectorAll('input, select, textarea').forEach(el => { el.disabled = false; });
+                }
             }
             window.scrollTo(0, 0);
         }
@@ -597,6 +655,23 @@
             const namaPegawai = formData.get('nama_pegawai');
             const kaunter = formData.get('kaunter_penghargaan');
             const ucapan = formData.get('ucapan_penghargaan') || '';
+            const namaPemberi = (formData.get('nama_pemberi') || '').trim();
+            let telefon4 = (formData.get('telefon_4digit') || '').trim().replace(/\D/g, '');
+            if (telefon4.length > 4) telefon4 = telefon4.slice(-4);
+
+            // Bukti pemberi: wajib salah satu (nama atau 4 digit telefon) untuk ketelusan
+            if (!namaPemberi && !telefon4) {
+                alert('Sila isi nama pemberi atau 4 digit terakhir no. telefon untuk ketelusan.');
+                btn.disabled = false;
+                btnText.innerText = "Hantar Penghargaan";
+                loader.classList.add('hidden');
+                return;
+            }
+
+            const pemberiPart = [];
+            if (namaPemberi) pemberiPart.push('Nama - ' + namaPemberi);
+            if (telefon4) pemberiPart.push('Tel: ' + telefon4);
+            const pemberiStr = ' [Pemberi: ' + pemberiPart.join(' | ') + ']';
 
             // Prepare data for submission (mark as penghargaan with special format)
             const data = {
@@ -606,7 +681,7 @@
                 skor_pantas: 5,
                 skor_jelas: 5,
                 kategori_perbaikan: '',
-                ulasan: `PENGHARGAAN kepada ${namaPegawai}: ${ucapan}`,
+                ulasan: `PENGHARGAAN kepada ${namaPegawai}: ${ucapan}${pemberiStr}`,
                 nama_pegawai: namaPegawai,
                 is_penghargaan: true
             };
@@ -620,11 +695,22 @@
                     }
                 });
 
+                const result = await response.json().catch(() => ({}));
+
                 if (!response.ok) {
-                    throw new Error('Ralat semasa menghantar');
+                    throw new Error(result.error || 'Ralat semasa menghantar');
                 }
 
-                // Show success with details
+                // Simpan tarikh untuk had 1 penghargaan per hari (ketelusan)
+                try {
+                    localStorage.setItem('penghargaan_last_date', getTodayKey());
+                } catch (e) {}
+
+                // Papar No. Rujukan untuk semakan
+                const rujukan = result.rujukan || new Date().toISOString();
+                const rujukanDisplay = rujukan.replace('T', ' ').substring(0, 19);
+                document.getElementById('penghargaan-rujukan-display').innerText = rujukanDisplay;
+
                 document.getElementById('penghargaan-nama-display').innerText = namaPegawai;
                 document.getElementById('penghargaan-kaunter-display').innerText = kaunter;
 
@@ -773,11 +859,18 @@
                 const rows = Array.isArray(payload) ? payload : (payload && Array.isArray(payload.data) ? payload.data : []);
                 dashboardData = rows;
 
-                // Update statistics
                 updateStats(rows);
-
-                // Render table
                 renderFeedbackTable(rows);
+
+                const container = document.getElementById('feedback-table-container');
+                // Papar mesej ralat sebenar (kredensial / Google API)
+                const errMsg = payload.error || (rows.length === 0 && payload.message ? payload.message : null);
+                if (errMsg) {
+                    const msg = document.createElement('div');
+                    msg.className = 'bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg text-sm mb-3';
+                    msg.innerHTML = '<strong>Ralat:</strong> ' + errMsg;
+                    container.insertBefore(msg, container.firstChild);
+                }
 
             } catch (error) {
                 console.error('Error loading data:', error);
@@ -801,6 +894,9 @@
             // Separate penghargaan from regular feedback
             const penghargaanData = data.filter(row =>
                 row.ulasan && row.ulasan.toUpperCase().startsWith('PENGHARGAAN')
+            );
+            const regularData = data.filter(row =>
+                !row.ulasan || !row.ulasan.toUpperCase().startsWith('PENGHARGAAN')
             );
 
             const total = data.length;
@@ -837,13 +933,18 @@
                 return;
             }
 
-            // Parse penghargaan data
+            // Parse penghargaan data (ucapan + pemberi untuk semakan)
             const parsed = penghargaanData.map(row => {
                 const ulasan = row.ulasan || '';
                 const match = ulasan.match(/PENGHARGAAN kepada (.+?):(.*)/i);
+                let ucapanFull = match ? match[2].trim() : ulasan;
+                const pemberiMatch = ucapanFull.match(/\s*\[Pemberi:\s*([^\]]+)\]\s*$/);
+                const ucapanDisplay = pemberiMatch ? ucapanFull.replace(/\s*\[Pemberi:\s*[^\]]+\]\s*$/, '').trim() : ucapanFull;
+                const pemberiDisplay = pemberiMatch ? pemberiMatch[1].trim() : '';
                 return {
                     nama: match ? match[1].trim() : 'Tidak diketahui',
-                    ucapan: match ? match[2].trim() : ulasan,
+                    ucapan: ucapanDisplay,
+                    pemberi: pemberiDisplay,
                     kaunter: row.kaunter || '-',
                     timestamp: row.timestamp || '-'
                 };
@@ -858,6 +959,7 @@
                                 <p class="font-bold text-orange-900 text-sm">${p.nama}</p>
                                 <p class="text-xs text-slate-500">${p.kaunter} • ${p.timestamp}</p>
                                 ${p.ucapan ? `<p class="text-xs text-slate-600 mt-1 italic">"${p.ucapan}"</p>` : ''}
+                                ${p.pemberi ? `<p class="text-xs text-amber-700 mt-1">Pemberi (semakan): ${p.pemberi}</p>` : ''}
                             </div>
                             <span class="text-xl">⭐</span>
                         </div>
@@ -876,19 +978,15 @@
                 return;
             }
 
-            // Filter out penghargaan entries
-            const regularData = data.filter(row =>
-                !row.ulasan || !row.ulasan.toUpperCase().startsWith('PENGHARGAAN')
-            );
-
-            // Show last 20 entries, most recent first
-            const recentData = regularData.slice(-20).reverse();
+            // Papar SEMUA rekod (maklum balas + penghargaan), paling baru dulu, max 20
+            const recentData = data.slice(0, 20);
 
             let html = `
                 <table class="w-full text-sm">
                     <thead class="bg-slate-100 text-slate-600">
                         <tr>
                             <th class="p-2 text-left rounded-tl-lg">Tarikh</th>
+                            <th class="p-2 text-left">Jenis</th>
                             <th class="p-2 text-left">Kaunter</th>
                             <th class="p-2 text-left">Skor</th>
                             <th class="p-2 text-left rounded-tr-lg">Ulasan</th>
@@ -898,17 +996,22 @@
             `;
 
             recentData.forEach(row => {
+                const isPenghargaan = row.ulasan && row.ulasan.toUpperCase().startsWith('PENGHARGAAN');
+                const jenis = isPenghargaan ? '<span class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-xs">Penghargaan</span>' : '<span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs">Maklum balas</span>';
                 const avgScore = ((parseFloat(row.skor_mesra) + parseFloat(row.skor_pantas) + parseFloat(row.skor_jelas)) / 3).toFixed(1);
-                const ulasanShort = row.ulasan ? (row.ulasan.length > 30 ? row.ulasan.substring(0, 30) + '...' : row.ulasan) : '-';
+                let ulasanShort = row.ulasan || '-';
+                if (isPenghargaan && ulasanShort.length > 40) ulasanShort = ulasanShort.substring(0, 40) + '...';
+                else if (ulasanShort.length > 30) ulasanShort = ulasanShort.substring(0, 30) + '...';
 
                 html += `
                     <tr class="hover:bg-slate-50">
                         <td class="p-2 text-slate-600">${row.timestamp || '-'}</td>
+                        <td class="p-2">${jenis}</td>
                         <td class="p-2">${row.kaunter || '-'}</td>
                         <td class="p-2">
                             <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded font-semibold">${avgScore}</span>
                         </td>
-                        <td class="p-2 text-slate-600" title="${row.ulasan || ''}">${ulasanShort}</td>
+                        <td class="p-2 text-slate-600" title="${(row.ulasan || '').replace(/"/g, '&quot;')}">${ulasanShort}</td>
                     </tr>
                 `;
             });
@@ -918,22 +1021,13 @@
         }
 
         function showDemoData() {
-            // Demo data for preview when Google Sheets is not configured
-            const demoData = [
-                { timestamp: '2024-01-15 09:30', kaunter: 'Kaunter 1', skor_mesra: 5, skor_pantas: 4, skor_jelas: 5, ulasan: 'Staf sangat mesra dan membantu. Terima kasih!' },
-                { timestamp: '2024-01-15 10:15', kaunter: 'Kaunter 2', skor_mesra: 4, skor_pantas: 3, skor_jelas: 4, ulasan: 'Menunggu agak lama tapi pelayanan bagus.' },
-                { timestamp: '2024-01-15 11:00', kaunter: 'Kaunter 1', skor_mesra: 5, skor_pantas: 5, skor_jelas: 5, ulasan: 'Perkhidmatan terbaik! Layanan sangat pantas.' },
-                { timestamp: '2024-01-15 14:20', kaunter: 'Kaunter 2', skor_mesra: 3, skor_pantas: 2, skor_jelas: 4, ulasan: 'Sistem agak perlahan hari ini. Perlu perbaikan.' },
-                { timestamp: '2024-01-15 15:45', kaunter: 'Kaunter 1', skor_mesra: 5, skor_pantas: 4, skor_jelas: 5, ulasan: 'Penerangan sangat jelas dan mudah difahami.' }
-            ];
+            // Tiada data demo – papar kosong apabila fetch gagal (Sheet tidak disambung)
+            dashboardData = [];
+            updateStats([]);
+            renderFeedbackTable([]);
 
-            dashboardData = demoData;
-            updateStats(demoData);
-            renderFeedbackTable(demoData);
-
-            // Add notice
             const container = document.getElementById('feedback-table-container');
-            container.innerHTML = '<div class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-2 rounded mb-2 text-xs">Mod Demo: Sambungkan Google Sheets untuk melihat data sebenar</div>' + container.innerHTML;
+            container.innerHTML = '<div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg text-sm mb-3">Tiada data. Sambungkan Google Sheets (kredensial + SPREADSHEET_ID) untuk melihat maklum balas sebenar.</div><p class="text-center text-slate-500 py-4">Tiada data tersedia.</p>';
         }
 
         // ==================== GEMINI AI INTEGRATION ====================

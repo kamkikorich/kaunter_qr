@@ -3,16 +3,23 @@
 
 const { google } = require('googleapis');
 const path = require('path');
+const fs = require('fs');
 
-// Load service account credentials
+const CRED_PATH = path.join(__dirname, '..', 'perkeso-keningau-qr-fb9465d9879f.json');
+
+// Load service account credentials (returns null jika tiada = demo mode)
 const getCredentials = () => {
-  // For local development, load from file
-  // For production (Vercel), use environment variable
   if (process.env.GOOGLE_SERVICE_ACCOUNT) {
-    return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+    try {
+      return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+    } catch (e) {
+      return null;
+    }
   }
-  // Vercel will use env variable, locally we can use the json file
-  return require('../perkeso-keningau-qr-fb9465d9879f.json');
+  if (fs.existsSync(CRED_PATH)) {
+    return require(CRED_PATH);
+  }
+  return null; // Demo mode: tiada kredensial
 };
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '1Fr8IIa2fZMvu4W6G_ekVEcJxZZHWNnkT2-drp_WtJ18';
@@ -40,41 +47,42 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Missing required ratings' });
     }
 
-    // Setup Google Auth
-    const credentials = getCredentials();
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets']
-    });
-
-    const sheets = google.sheets({ version: 'v4', auth });
-
-    // Prepare row data
+    const timestamp = new Date().toISOString();
     const rowData = [
-      new Date().toISOString(),           // Timestamp
-      data.kaunter || '',                // Kaunter
-      data.tujuan || '',                 // Tujuan
-      parseInt(data.skor_mesra) || 0,    // Skor Mesra
-      parseInt(data.skor_pantas) || 0,   // Skor Pantas
-      parseInt(data.skor_jelas) || 0,    // Skor Jelas
-      data.kategori_perbaikan || '',     // Kategori Perbaikan
-      data.ulasan || '',                 // Ulasan
-      ''                                 // Sentimen AI (placeholder)
+      timestamp,
+      data.kaunter || '',
+      data.tujuan || '',
+      parseInt(data.skor_mesra) || 0,
+      parseInt(data.skor_pantas) || 0,
+      parseInt(data.skor_jelas) || 0,
+      data.kategori_perbaikan || '',
+      data.ulasan || '',
+      ''
     ];
 
-    // Append to sheet
-    await sheets.spreadsheets.values.append({
-      spreadsheetId: SPREADSHEET_ID,
-      range: `${SHEET_NAME}!A:I`,
-      valueInputOption: 'USER_ENTERED',
-      resource: {
-        values: [rowData]
-      }
-    });
+    const credentials = getCredentials();
+    if (credentials) {
+      // Simpan ke Google Sheets
+      const auth = new google.auth.GoogleAuth({
+        credentials,
+        scopes: ['https://www.googleapis.com/auth/spreadsheets']
+      });
+      const sheets = google.sheets({ version: 'v4', auth });
+      await sheets.spreadsheets.values.append({
+        spreadsheetId: SPREADSHEET_ID,
+        range: `${SHEET_NAME}!A:I`,
+        valueInputOption: 'USER_ENTERED',
+        resource: { values: [rowData] }
+      });
+    } else {
+      // Demo mode: log sahaja (tiada kredensial)
+      console.log('[DEMO] Data diterima (tiada Google credentials):', JSON.stringify(rowData));
+    }
 
     return res.status(200).json({
       success: true,
-      message: 'Data berjaya direkodkan'
+      message: credentials ? 'Data berjaya direkodkan' : 'Data diterima (demo mode – tiada kredensial Google)',
+      rujukan: timestamp
     });
 
   } catch (error) {

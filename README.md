@@ -1,6 +1,6 @@
 # PERKESO Keningau - Sistem Penilaian Pelanggan
 
-Sistem maklum balas pelanggan berdasarkan standard 1Serve dengan integrasi Google Sheets dan analisis AI DeepSeek.
+Sistem maklum balas pelanggan berdasarkan standard 1Serve dengan integrasi Google Sheets dan analisis AI Gemini.
 
 ## Struktur Projek
 
@@ -69,11 +69,13 @@ git push -u origin main
 
 ## Setup Google Sheets
 
-Pastikan Google Sheets anda ada 9 lajur:
+Pastikan **Sheet1** dalam spreadsheet anda ada **baris header (row 1)** dan **9 lajur** seperti berikut:
 
 | A | B | C | D | E | F | G | H | I |
 |---|---|---|---|---|---|---|---|---|
-| timestamp | kaunter | tujuan | skor_mesra | skor_pantas | skor_jelas | kategori_perbaikan | ulasan | sentimen_ai |
+| Timestamp | Kaunter | Tujuan | Skor Mesra | Skor Pantas | Skor Jelas | Kategori Perbaikan | Ulasan | Sentimen AI |
+
+**Nota header:** Nama lajur boleh dalam Bahasa Malaysia atau Inggeris; sistem mengesan header melalui kata kunci (timestamp/tarikh, kaunter, tujuan, skor, kategori, ulasan, sentimen). Untuk **Penghargaan Staf**, maklumat pemberi (nama/4 digit telefon) disimpan di dalam lajur **Ulasan** (H) dalam format `[Pemberi: Nama - xxx | Tel: xxxx]` — tiada lajur tambahan diperlukan.
 
 ## API Endpoints
 
@@ -95,6 +97,21 @@ Pastikan Google Sheets anda ada 9 lajur:
   "ulasan": "Staf sangat mesra!"
 }
 ```
+
+## Ujian (Testing)
+
+Untuk pastikan data boleh dikemaskini (rating biasa dan penghargaan):
+
+```bash
+# Ujian terus modul submit (tanpa server – guna kod terkini)
+node test-submit-direct.js
+
+# Atau ujian melalui API (pastikan server sudah jalan: npm run dev)
+node test-submit.js
+```
+
+- **Tanpa kredensial Google:** API guna demo mode – respons `success: true` dan data log ke konsol; tiada tulis ke Sheet.
+- **Dengan kredensial:** Data akan ditulis ke Google Sheet; semak Sheet1 untuk rekod baru.
 
 ## Keselamatan
 
@@ -124,9 +141,9 @@ Atau dalam `.env`:
 SPREADSHEET_ID=your_new_spreadsheet_id
 ```
 
-## DeepSeek AI Integration
+## Gemini AI Integration
 
 Untuk menggunakan analisis AI:
-1. Daftar di [deepseek.com](https://deepseek.com)
-2. Dapatkan API Key
-3. Masukkan dalam `index.html` atau environment variable `DEEPSEEK_API_KEY`
+1. Dapatkan API Key di [Google AI Studio](https://aistudio.google.com/apikey)
+2. Masukkan dalam environment variable: `GEMINI_API_KEY=your_api_key`
+3. (Vercel) Tambah `GEMINI_API_KEY` dalam Environment Variables projek

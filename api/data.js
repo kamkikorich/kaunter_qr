@@ -2,20 +2,37 @@
 // Untuk Vercel Serverless Functions
 
 const { google } = require('googleapis');
+const path = require('path');
+const fs = require('fs');
 
-// Load service account credentials
+const CRED_PATH = path.join(__dirname, '..', 'perkeso-keningau-qr-fb9465d9879f.json');
+
+// Load service account credentials (sama seperti submit.js – baca .env / .env.local)
 const getCredentials = () => {
-  if (process.env.GOOGLE_SERVICE_ACCOUNT) {
-    return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS && fs.existsSync(process.env.GOOGLE_APPLICATION_CREDENTIALS)) {
+    try {
+      return require(path.resolve(process.env.GOOGLE_APPLICATION_CREDENTIALS));
+    } catch (e) {
+      return null;
+    }
   }
-  return require('../perkeso-keningau-qr-fb9465d9879f.json');
+  if (process.env.GOOGLE_SERVICE_ACCOUNT) {
+    try {
+      return JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT);
+    } catch (e) {
+      return null;
+    }
+  }
+  if (fs.existsSync(CRED_PATH)) {
+    return require(CRED_PATH);
+  }
+  return null;
 };
 
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID || '1Fr8IIa2fZMvu4W6G_ekVEcJxZZHWNnkT2-drp_WtJ18';
 const SHEET_NAME = process.env.SHEET_NAME || 'Sheet1';
 
 module.exports = async (req, res) => {
-  // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -28,9 +45,17 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const credentials = getCredentials();
+  if (!credentials) {
+    return res.status(200).json({
+      success: true,
+      data: [],
+      count: 0,
+      message: 'GOOGLE_SERVICE_ACCOUNT tidak dikonfigurasi. Sila set dalam .env atau .env.local.'
+    });
+  }
+
   try {
-    // Setup Google Auth
-    const credentials = getCredentials();
     const auth = new google.auth.GoogleAuth({
       credentials,
       scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
@@ -54,26 +79,28 @@ module.exports = async (req, res) => {
       });
     }
 
-    // Convert to JSON (skip header row only if it exists)
-    const headerRow = rows[0] || [];
-    const hasHeader = headerRow.some(cell =>
-      typeof cell === 'string' && /timestamp|tarikh|kaunter|tujuan|skor|kategori|ulasan|sentimen/i.test(cell)
-    );
-    const dataRows = hasHeader ? rows.slice(1) : rows;
+    // Baris 1 dalam sheet = header (Timestamp, Kaunter, ...). Skip supaya jumlah sepadan dengan data.
+    const firstCellVal = rows[0] && rows[0][0] != null ? String(rows[0][0]).trim() : '';
+    const firstCellIsTimestamp = /^\d{4}-\d{2}-\d{2}/.test(firstCellVal) && !isNaN(new Date(firstCellVal).getTime());
+    const skipFirstRowAsHeader = !firstCellIsTimestamp;
+    const dataRows = skipFirstRowAsHeader && rows.length > 1 ? rows.slice(1) : rows;
 
-    const data = dataRows.map(row => {
-      return {
-        timestamp: formatDate(row[0]),
-        kaunter: row[1] || '',
-        tujuan: row[2] || '',
-        skor_mesra: row[3] || 0,
-        skor_pantas: row[4] || 0,
-        skor_jelas: row[5] || 0,
-        kategori_perbaikan: row[6] || '',
-        ulasan: row[7] || '',
-        sentimen_ai: row[8] || ''
-      };
-    }).reverse(); // Newest first
+    const data = dataRows
+      .filter(row => row && (row[0] != null && row[0] !== '') || (row[1] != null && row[1] !== '')) // elak baris kosong
+      .map(row => {
+        return {
+          timestamp: formatDate(row[0]),
+          kaunter: row[1] || '',
+          tujuan: row[2] || '',
+          skor_mesra: row[3] || 0,
+          skor_pantas: row[4] || 0,
+          skor_jelas: row[5] || 0,
+          kategori_perbaikan: row[6] || '',
+          ulasan: row[7] || '',
+          sentimen_ai: row[8] || ''
+        };
+      })
+      .reverse(); // Newest first
 
     return res.status(200).json({
       success: true,
@@ -83,8 +110,11 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Error:', error);
-    return res.status(500).json({
+    // Return 200 supaya frontend boleh baca mesej ralat (bukan masuk catch showDemoData)
+    return res.status(200).json({
       success: false,
+      data: [],
+      count: 0,
       error: error.message
     });
   }

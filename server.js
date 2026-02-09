@@ -8,8 +8,9 @@ const url = require('url');
 
 const PORT = 3000;
 
-// Load environment variables from .env file
+// Load environment variables: .env dahulu, kemudian .env.local (override)
 require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 
 // API handlers
 const submitHandler = require('./api/submit');
@@ -44,6 +45,9 @@ const server = http.createServer(async (req, res) => {
   }
   if (pathname === '/api/config') {
     return await handleAPI(req, res, configHandler);
+  }
+  if (pathname === '/api/check-sheet') {
+    return await handleAPI(req, res, require('./api/check-sheet'));
   }
 
   // Static Files
@@ -128,6 +132,7 @@ server.listen(PORT, () => {
   console.log(`   http://localhost:${PORT}/          - Frontend (Customer Form)`);
   console.log(`   http://localhost:${PORT}/api/submit - POST feedback to Google Sheets`);
   console.log(`   http://localhost:${PORT}/api/data   - GET all feedback data`);
-  console.log(`   http://localhost:${PORT}/api/analyze - POST DeepSeek AI analysis`);
+  console.log(`   http://localhost:${PORT}/api/analyze - POST Gemini AI analysis`);
+  console.log(`   http://localhost:${PORT}/api/check-sheet - GET semak sambungan Google Sheet`);
   console.log(`\n⚙️  Press Ctrl+C to stop\n`);
 });

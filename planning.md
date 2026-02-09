@@ -1,6 +1,6 @@
 Blueprint Pembangunan Sistem Penilaian Kaunter PERKESO Keningau
 1. Objektif Teknikal
-Membina Web App satu halaman (Single Page App) yang berfungsi sebagai borang penilaian pelanggan dan dashboard admin dengan analisis DeepSeek AI.
+Membina Web App satu halaman (Single Page App) yang berfungsi sebagai borang penilaian pelanggan dan dashboard admin dengan analisis Gemini AI.
 
 2. Arkitektur Data (Google Sheets)
 Sila pastikan Google Sheets mempunyai header berikut di Sheet1:
@@ -21,7 +21,7 @@ kategori_perbaikan: Checkbox data
 
 ulasan: Teks bebas pelanggan
 
-sentimen_ai: (Untuk diisi oleh DeepSeek kemudian)
+sentimen_ai: (Untuk diisi oleh Gemini kemudian)
 
 3. Struktur Soalan (Standard 1Serve/PERKESO)
 Identiti: Dropdown [Kaunter 1, Kaunter 2].
@@ -49,20 +49,20 @@ Authentication: Login mudah (Password-protected section).
 
 Data Retrieval: Fetch data dari Google Sheets.
 
-DeepSeek Integration: - Admin klik butang "Analisis Sentimen".
+Gemini Integration: - Admin klik butang "Analisis Sentimen".
 
-Script akan menghantar 10-20 ulasan terakhir ke DeepSeek API.
+Script akan menghantar 10-20 ulasan terakhir ke Gemini API.
 
-Prompt DeepSeek: "Analisis komen pelanggan PERKESO ini. Berikan rumusan eksekutif dalam 3 poin utama dan cadangan tindakan untuk pihak pengurusan."
+Prompt Gemini: "Analisis komen pelanggan PERKESO ini. Berikan rumusan eksekutif dalam 3 poin utama dan cadangan tindakan untuk pihak pengurusan."
 
 Paparkan hasil analisis terus di Dashboard.
 
 5. Keperluan API & Kunci
 Google Deployment URL: (Untuk disambungkan ke Apps Script).
 
-DeepSeek API Key: (Disimpan dalam .env atau variable sulit).
+Gemini API Key: (Disimpan dalam .env atau variable sulit).
 
-Endpoint DeepSeek: https://api.deepseek.com/v1/chat/completions
+Endpoint Gemini: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 
 6. Paparan UI (Tailwind CSS)
 User Mode: Minimalistik, ikon besar, mesra peranti mudah alih (Mobile-first).
@@ -79,7 +79,7 @@ Frontend: HTML5, Tailwind CSS (via CDN), JavaScript (Vanilla).
 
 Database: Google Sheets (Direct Integration via Webhook/Deployment URL).
 
-AI Engine: DeepSeek API (https://api.deepseek.com/v1).
+AI Engine: Google Gemini API (gemini-2.0-flash).
 
 Environment: Mobile-friendly (Target: QR Scan).
 
@@ -100,7 +100,7 @@ Rating_Clarity (1-5)
 
 Issues (Multi-select: Waiting Time, Facilities, Staff Attitude, System)
 
-Customer_Comment (Raw Text for DeepSeek)
+Customer_Comment (Raw Text for Gemini)
 
 3. CORE FUNCTIONALITIES
 A. Customer Entry (Form)
@@ -115,13 +115,13 @@ Password Protection: Simple JS-based gatekeeper.
 
 Data Fetching: Read JSON data from Google Sheets.
 
-DeepSeek Integration:
+Gemini Integration:
 
-Trigger: "Analyze with DeepSeek" button.
+Trigger: "Analyze with Gemini" button.
 
 Input: Concatenate the last 20 Customer_Comment rows.
 
-DeepSeek Prompt: "As a Service Quality Consultant, analyze these PERKESO Keningau customer comments. Provide a summary of sentiment and 3 actionable improvements for the Executive Officer."
+Gemini Prompt: "As a Service Quality Consultant, analyze these PERKESO Keningau customer comments. Provide a summary of sentiment and 3 actionable improvements for the Executive Officer."
 
 Output: Display AI summary in a dedicated "Executive Insight" card.
 
@@ -133,6 +133,6 @@ Accessibility: Large buttons for elderly users.
 Feedback: Show "Terima Kasih - Maklum Balas Diterima" after submission.
 
 5. SECURITY & KEYS
-Store DEEPSEEK_API_KEY in a configuration constant (to be replaced by user).
+Store GEMINI_API_KEY in a configuration constant (to be replaced by user).
 
 Google Sheet URL must be accessible via exec link.
